@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div class="container">
+        <form action="" id="shorten-form">
+            <div>
+                <label for="url" >Enter URL: </label>
+                <input type="url" name="url" id="url" required>
+            </div>
+
+             <div>
+                <label for="shortCode" >Enter a shortCode : </label>
+                <input type="text" name="shortCode" id="shortCode" required>
+            </div> 
+            <button type="submit">Shorten</button>
+        </form>
+        <h2>
+            Shortened URL 
+        </h2>
+        <ul id="shortened-urls"></ul>
+    </div>
+    <script>
+const fetchShortenedUrl = async () => {
+    const response = await fetch("/links");
+    const data = await response.json();
+    console.log(data);
+};
+
+document.getElementById("shorten-form")
+.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const url = formData.get("url");
+    const shortCode = formData.get("shortCode");
+
+    try {
+        const response = await fetch("/shorten", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ url, shortCode })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("Shortened Successfully");
+            console.log(result);
+            event.target.reset();
+            fetchShortenedUrl();
+        } else {
+            alert(result);
+        }
+
+    } catch (error) {
+        alert("Server Error");
+    }
+});
+
+fetchShortenedUrl();
+</script>
+</body>
+</html>
